@@ -16,18 +16,18 @@ type EditedMessage struct {
 	Reply_markup             *ReplyMarkupT `json:"reply_markup,omitempty"`
 }
 
-func (rm *EditedMessage) AddCallbackButton(text, data string) {
+func (em *EditedMessage) AddCallbackButton(text, data string) {
 	var (
 		buttons [][]InlineKeyboardT
 		row1    []InlineKeyboardT = []InlineKeyboardT{InlineKeyboardT{text, data}}
 	)
 	buttons = append(buttons, row1)
 
-	rm.Reply_markup = &ReplyMarkupT{buttons}
+	em.Reply_markup = &ReplyMarkupT{buttons}
 }
 
 // Sends message 'text' to the the specified chat (an ID)
-func (rm *EditedMessage) Send(text string, to int) (err error) {
+func (em *EditedMessage) Send(text string, to int) (err error) {
 	var url = config.BotAPIBaseURL + config.BotAPIToken + "/editMessageText"
 	conn := pool.Get()
 	defer conn.Close()
@@ -38,12 +38,12 @@ func (rm *EditedMessage) Send(text string, to int) (err error) {
 	// }
 
 	// Initialize message
-	rm.Text = text
-	rm.Disable_web_page_preview = true
-	rm.Parse_mode = "HTML"
+	em.Text = text
+	em.Disable_web_page_preview = true
+	em.Parse_mode = "HTML"
 
 	// Encode data into JSON
-	payload, err := json.Marshal(rm)
+	payload, err := json.Marshal(em)
 	if err != nil {
 		return
 	}

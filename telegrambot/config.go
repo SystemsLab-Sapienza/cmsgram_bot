@@ -44,7 +44,7 @@ func init() {
 func loadConfig(filepath string) error {
 	f, err := os.Open(filepath)
 	if err != nil {
-		log.Fatal("Can't find configuration file", err)
+		log.Fatal(err)
 	}
 
 	r := csv.NewReader(f)
@@ -60,7 +60,7 @@ func loadConfig(filepath string) error {
 			break
 		}
 		if err != nil {
-			log.Fatal("main:", err)
+			log.Fatal("loadConfig():", err)
 		}
 
 		value := record[1]
@@ -77,23 +77,23 @@ func loadConfig(filepath string) error {
 			i, err := strconv.Atoi(value)
 			if err != nil {
 				fmt.Printf("redis_max_idle value '%s' not valid. Using default.\n", value)
-			} else {
-				config.RedisMaxIdle = i
 			}
+
+			config.RedisMaxIdle = i
 		case "redis_idle_timeout":
 			i, err := strconv.Atoi(value)
 			if err != nil {
 				fmt.Printf("redis_idle_timeout value '%s' not valid. Using default.\n", value)
-			} else {
-				config.RedisIdleTimeout = time.Duration(i)
 			}
+
+			config.RedisIdleTimeout = time.Duration(i)
 		case "test_recipient":
 			i, err := strconv.Atoi(value)
 			if err != nil {
 				fmt.Printf("test_recipient value '%s' not valid. Ignored.\n", value)
-			} else {
-				config.TestRecipient = i
 			}
+
+			config.TestRecipient = i
 		case "working_directory":
 			config.WorkingDirectory = value
 		case "webapp_endpoint":

@@ -19,10 +19,6 @@ var (
 	templates *template.Template
 )
 
-func init() {
-
-}
-
 func main() {
 	var (
 		flagNewToken   bool
@@ -58,10 +54,10 @@ func main() {
 		"templates/get_info_new.tpl",
 		"templates/news.tpl",
 		"templates/rss_update.tpl",
-		"templates/subscribe.tpl",
 		"templates/start.tpl",
-		"templates/unsubscribe.tpl",
-		"templates/twiki.tpl"))
+		"templates/subscribe.tpl",
+		"templates/twiki.tpl",
+		"templates/unsubscribe.tpl"))
 
 	// Set up endpoints
 	http.HandleFunc(config.CrawlerEndpoint, broadcastUpdateHandler)

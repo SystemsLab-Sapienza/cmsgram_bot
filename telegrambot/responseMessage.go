@@ -50,8 +50,6 @@ func (rm *ResponseMessage) Send(text string, to int) (err error) {
 	}
 
 	// Initialize message
-	// *rm = ResponseMessage{chat, text, true, "HTML", &ReplyMarkupT{buttons}}
-	// *rm = ResponseMessage{Chat_id: chat, Text: text, Disable_web_page_preview: true, Parse_mode: "HTML"}
 	rm.Chat_id = chat
 	rm.Text = text
 	rm.Disable_web_page_preview = true

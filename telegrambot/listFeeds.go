@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
@@ -38,7 +37,6 @@ func listFeeds(i, max int) (string, error) {
 
 		err = templates.ExecuteTemplate(&b, "twiki.tpl", feed)
 		if err != nil {
-			fmt.Println("dentro")
 			return "", err
 		}
 

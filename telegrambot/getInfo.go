@@ -9,8 +9,9 @@ import (
 
 func getInfoNew(name string) (string, error) {
 	var (
-		b    bytes.Buffer
-		user = struct {
+		b     bytes.Buffer
+		lname = strings.ToLower(name)
+		user  = struct {
 			ID string
 
 			Email      string   `redis:"email"`
@@ -26,8 +27,6 @@ func getInfoNew(name string) (string, error) {
 
 	conn := pool.Get()
 	defer conn.Close()
-
-	lname := strings.ToLower(name)
 
 	uids, err := redis.Strings(conn.Do("SMEMBERS", "webapp:users:info:"+lname))
 	if err != nil && err != redis.ErrNil {

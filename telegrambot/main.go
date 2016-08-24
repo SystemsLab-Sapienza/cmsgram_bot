@@ -18,11 +18,13 @@ var (
 	pool      *redis.Pool
 	templates *template.Template
 
+	flagConfigFile string
 	flagNewToken   bool
 	flagUsePolling bool
 )
 
 func init() {
+	flag.StringVar(&flagConfigFile, "c", "", "Specifies the path to the config file.")
 	flag.BoolVar(&flagNewToken, "g", false, "Generates a new pseudorandom token.")
 	flag.BoolVar(&flagUsePolling, "p", false, "Tells the bot to interface with the Telegram Bot API through polling.")
 
@@ -49,12 +51,12 @@ func main() {
 		return
 	}
 
-	if len(os.Args) == 2 {
+	if flagConfigFile == "" {
 		fmt.Println("No config file provided, exiting.")
 		return
 	}
 
-	loadConfig(os.Args[2])
+	loadConfig(flagConfigFile)
 
 	// Change root directory
 	if err := os.Chdir(config.WorkingDirectory); err != nil {

@@ -17,17 +17,31 @@ import (
 var (
 	pool      *redis.Pool
 	templates *template.Template
+
+	flagNewToken   bool
+	flagUsePolling bool
 )
 
-func main() {
-	var (
-		flagNewToken   bool
-		flagUsePolling bool
-	)
-
-	// TODO Configure
+func init() {
 	flag.BoolVar(&flagNewToken, "g", false, "Generates a new pseudorandom token.")
 	flag.BoolVar(&flagUsePolling, "p", false, "Tells the bot to interface with the Telegram Bot API through polling.")
+
+	// Create a thread-safe connection pool for redis
+	pool = &redis.Pool{
+		MaxIdle:     config.RedisMaxIdle,
+		IdleTimeout: config.RedisIdleTimeout * time.Second,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial(config.RedisDomain, config.RedisAddress)
+			if err != nil {
+				return nil, err
+			}
+
+			return c, err
+		},
+	}
+}
+
+func main() {
 	flag.Parse()
 
 	if flagNewToken {
@@ -62,20 +76,6 @@ func main() {
 	// Set up endpoints
 	http.HandleFunc(config.CrawlerEndpoint, broadcastUpdateHandler)
 	http.HandleFunc(config.WebappEndpoint, sendMessageHandler)
-
-	// Create a thread-safe connection pool for redis
-	pool = &redis.Pool{
-		MaxIdle:     config.RedisMaxIdle,
-		IdleTimeout: config.RedisIdleTimeout * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial(config.RedisDomain, config.RedisAddress)
-			if err != nil {
-				return nil, err
-			}
-
-			return c, err
-		},
-	}
 
 	err := initRSS()
 	if err != nil {

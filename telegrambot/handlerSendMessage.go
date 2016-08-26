@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -39,7 +40,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request) error {
 
 	// Check payload is valid
 	if payload.Key != "message" {
-		return nil // TODO check
+		return errors.New("Invalid payload")
 	}
 
 	conn := pool.Get()

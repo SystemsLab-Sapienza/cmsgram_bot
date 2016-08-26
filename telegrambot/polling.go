@@ -34,15 +34,15 @@ func polling() {
 		}
 
 		// Read the response body
-		message, err := ioutil.ReadAll(res.Body)
-		res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println("polling(): ioutil.ReadAll():", err)
 			return
 		}
+		res.Body.Close()
 
 		// Decode the JSON payload
-		err = json.Unmarshal(message, &response)
+		err = json.Unmarshal(body, &response)
 		if err != nil {
 			log.Println("polling(): json.Unmarshal():", err)
 			return

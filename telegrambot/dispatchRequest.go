@@ -155,7 +155,6 @@ func dispatchRequest(u Update) error {
 			return err
 		}
 	case "/avvisi":
-		// TODO isUserSubscribed(cmd, user)
 		err = newSubscription(cmd, user)
 		if err != nil {
 			return err

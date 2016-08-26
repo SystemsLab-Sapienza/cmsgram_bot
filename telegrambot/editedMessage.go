@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -28,14 +29,16 @@ func (em *EditedMessage) AddCallbackButton(text, data string) {
 
 // Sends message 'text' to the the specified chat (an ID)
 func (em *EditedMessage) Send(text string, to int) (err error) {
-	var url = config.BotAPIBaseURL + config.BotAPIToken + "/editMessageText"
+	var (
+		response = struct {
+			Ok     bool
+			Result MessageT
+		}{}
+		url = config.BotAPIBaseURL + config.BotAPIToken + "/editMessageText"
+	)
+
 	conn := pool.Get()
 	defer conn.Close()
-
-	// chat, err := redis.Int64(conn.Do("GET", "tgbot:user:chat:"+strconv.Itoa(to)))
-	// if err != nil {
-	// 	return
-	// }
 
 	// Initialize message
 	em.Text = text
@@ -54,12 +57,23 @@ func (em *EditedMessage) Send(text string, to int) (err error) {
 		return
 	}
 
-	// TODO check response to be valid
-	_, err = ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return
 	}
 	res.Body.Close()
+
+	// Decode the JSON payload
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Println("Send(): json.Unmarshal():", err)
+		return
+	}
+
+	if !response.Ok {
+		log.Println("Send(): Invalid request", response)
+		return
+	}
 
 	return
 }

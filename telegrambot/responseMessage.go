@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -40,7 +41,14 @@ func (rm *ResponseMessage) AddCallbackButton(text, data string) {
 
 // Sends message 'text' to the the specified chat (an ID)
 func (rm *ResponseMessage) Send(text string, to int) (err error) {
-	var url = config.BotAPIBaseURL + config.BotAPIToken + "/sendMessage"
+	var (
+		response = struct {
+			Ok     bool
+			Result MessageT
+		}{}
+		url = config.BotAPIBaseURL + config.BotAPIToken + "/sendMessage"
+	)
+
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -67,12 +75,23 @@ func (rm *ResponseMessage) Send(text string, to int) (err error) {
 		return
 	}
 
-	// TODO check response to be valid
-	_, err = ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return
 	}
 	res.Body.Close()
+
+	// Decode the JSON payload
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Println("Send(): json.Unmarshal():", err)
+		return
+	}
+
+	if !response.Ok {
+		log.Println("Send(): Invalid request", response)
+		return
+	}
 
 	return
 }

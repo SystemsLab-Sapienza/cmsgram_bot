@@ -108,6 +108,16 @@ func dispatchRequest(u Update) error {
 	case strings.HasPrefix(u.Message.Text, "/s_t"):
 		feed := u.Message.Text[3:]
 
+		yes, err := isSubscribed(user, feed)
+		if err != nil {
+			return err
+		}
+
+		if yes {
+			rm.Send("Sei già iscritto al feed.", user)
+			return nil
+		}
+
 		text, err := subscribeFeed(feed, user)
 		if err != nil {
 			log.Println("subscribeFeed():", err)
@@ -124,6 +134,16 @@ func dispatchRequest(u Update) error {
 		fallthrough
 	case strings.HasPrefix(u.Message.Text, "/u_t"):
 		feed := u.Message.Text[3:]
+
+		yes, err := isSubscribed(user, feed)
+		if err != nil {
+			return err
+		}
+
+		if !yes {
+			rm.Send("Non sei iscritto a questo feed.", user)
+			return nil
+		}
 
 		text, err := unsubscribeFeed(feed, user)
 		if err != nil {
@@ -155,6 +175,16 @@ func dispatchRequest(u Update) error {
 			return err
 		}
 	case "/avvisi":
+		yes, err := isSubscribed(user, "avvisi")
+		if err != nil {
+			return err
+		}
+
+		if yes {
+			rm.Send("Sei già iscritto al feed.", user)
+			return nil
+		}
+
 		err = newSubscription(cmd, user)
 		if err != nil {
 			return err
@@ -179,7 +209,7 @@ func dispatchRequest(u Update) error {
 			return err
 		}
 
-		rm.AddCallbackButton("Altro", "/feed/more/10")
+		// rm.AddCallbackButton("Altro", "/feed/more/10")
 		rm.Send(text, user)
 	case "/help", "/start":
 		if err = templates.ExecuteTemplate(&b, "start.tpl", nil); err != nil {

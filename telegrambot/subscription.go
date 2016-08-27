@@ -8,6 +8,18 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+func isSubscribed(uid int, feed string) (yes bool, err error) {
+	conn := pool.Get()
+	defer conn.Close()
+
+	yes, err = redis.Bool(conn.Do("SISMEMBER", "tgbot:feed:subscribers:"+feed, uid))
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func newSubscription(feed string, uid int) (err error) {
 	conn := pool.Get()
 	defer conn.Close()

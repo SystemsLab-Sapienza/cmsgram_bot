@@ -58,8 +58,18 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 			return err
 		}
 
+		err = templates.ExecuteTemplate(&b, "news.tpl", data)
+		if err != nil {
+			return err
+		}
+
+		if config.TestRecipient != 0 {
+			rm.Send(b.String(), config.TestRecipient)
+			return nil
+		}
+
 		// Fetch list of recipients
-		recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:"+payload.Value))
+		recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:avvisi"))
 		if err != nil {
 			return err
 		}
@@ -71,11 +81,6 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 				return err
 			}
 
-			err = templates.ExecuteTemplate(&b, "news.tpl", data)
-			if err != nil {
-				return err
-			}
-
 			// Send update to user
 			err = rm.Send(b.String(), chat)
 			if err != nil {
@@ -83,7 +88,6 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 			}
 			time.Sleep(delay * time.Millisecond)
 		}
-		// rm.Send(b.String(), config.TestRecipient)
 	case "facebook":
 	case "rss":
 		var (
@@ -106,8 +110,18 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 
 		data.URL = strings.Replace(data.URL, "WebRss?skin=rss", "WebHome", 1)
 
+		err = templates.ExecuteTemplate(&b, "rss_update.tpl", data)
+		if err != nil {
+			return err
+		}
+
+		if config.TestRecipient != 0 {
+			rm.Send(b.String(), config.TestRecipient)
+			return nil
+		}
+
 		// Fetch list of recipients
-		recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:"+payload.Value))
+		recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:t"+payload.Value))
 		if err != nil {
 			return err
 		}
@@ -115,11 +129,6 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 		// Broadcast update to recipients
 		for _, r := range recipients {
 			chat, err := strconv.Atoi(r)
-			if err != nil {
-				return err
-			}
-
-			err = templates.ExecuteTemplate(&b, "rss_update.tpl", data)
 			if err != nil {
 				return err
 			}

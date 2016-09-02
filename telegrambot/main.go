@@ -68,6 +68,7 @@ func main() {
 		"templates/feeds.tpl",
 		"templates/get_info_legacy.tpl",
 		"templates/get_info_new.tpl",
+		"templates/message.tpl",
 		"templates/news.tpl",
 		"templates/rss_update.tpl",
 		"templates/start.tpl",

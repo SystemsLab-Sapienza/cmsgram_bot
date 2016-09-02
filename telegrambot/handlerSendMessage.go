@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -15,9 +16,11 @@ import (
 func sendMessage(w http.ResponseWriter, r *http.Request) error {
 	const delay = 500 // Delay in ms
 	var (
+		b    bytes.Buffer
 		news = struct {
-			user_id string
-			content string
+			User_id string
+			Name    string
+			Content string
 		}{}
 		payload = struct {
 			Key   string
@@ -52,18 +55,28 @@ func sendMessage(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	_, err = redis.Scan(values, &news.user_id, &news.content)
+	_, err = redis.Scan(values, &news.User_id, &news.Content)
+	if err != nil {
+		return err
+	}
+
+	news.Name, err = getFullName(news.User_id)
+	if err != nil {
+		return err
+	}
+
+	err = templates.ExecuteTemplate(&b, "message.tpl", news)
 	if err != nil {
 		return err
 	}
 
 	if config.TestRecipient != 0 {
-		rm.Send(news.content, config.TestRecipient)
+		rm.Send(b.String(), config.TestRecipient)
 		return nil
 	}
 
 	// Fetch list of recipients
-	recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:d"+news.user_id))
+	recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:d"+news.User_id))
 	if err != nil {
 		return err
 	}
@@ -75,7 +88,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		// Send update to user
-		err = rm.Send(news.content, chat)
+		err = rm.Send(b.String(), chat)
 		if err != nil {
 			return err
 		}

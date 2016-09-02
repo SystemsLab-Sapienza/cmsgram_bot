@@ -16,11 +16,11 @@ import (
 func sendMessage(w http.ResponseWriter, r *http.Request) error {
 	const delay = 500 // Delay in ms
 	var (
-		b    bytes.Buffer
-		news = struct {
-			User_id string
-			Name    string
-			Content string
+		b       bytes.Buffer
+		message = struct {
+			SenderID   string
+			SenderName string
+			Content    string
 		}{}
 		payload = struct {
 			Key   string
@@ -49,23 +49,23 @@ func sendMessage(w http.ResponseWriter, r *http.Request) error {
 	conn := pool.Get()
 	defer conn.Close()
 
-	// Get news data
+	// Get message data
 	values, err := redis.Values(conn.Do("HMGET", "webapp:messages:"+payload.Value, "user_id", "content"))
 	if err != nil {
 		return err
 	}
 
-	_, err = redis.Scan(values, &news.User_id, &news.Content)
+	_, err = redis.Scan(values, &message.SenderID, &message.Content)
 	if err != nil {
 		return err
 	}
 
-	news.Name, err = getFullName(news.User_id)
+	message.SenderName, err = getFullName(message.SenderID)
 	if err != nil {
 		return err
 	}
 
-	err = templates.ExecuteTemplate(&b, "message.tpl", news)
+	err = templates.ExecuteTemplate(&b, "message.tpl", message)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Fetch list of recipients
-	recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:d"+news.User_id))
+	recipients, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:feed:subscribers:d"+message.SenderID))
 	if err != nil {
 		return err
 	}

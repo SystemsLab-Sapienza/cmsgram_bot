@@ -1,2 +1,2 @@
-<b>Messaggio da {{.Name}}:</b>
+<b>Messaggio da {{.SenderName}}:</b>
 {{.Content}}

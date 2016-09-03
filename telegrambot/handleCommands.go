@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"log"
 	"strconv"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 func handleCommands(cmd string, user int) error {
@@ -24,10 +26,10 @@ func handleCommands(cmd string, user int) error {
 	switch cmd {
 	case "/annulla":
 		lcmd, err := getLastCommand(user)
-		if err != nil {
+		if err != nil && err != redis.ErrNil {
 			return err
 		}
-		if lcmd == "" {
+		if len(lcmd) == 0 {
 			rm.Send("Nessun comando da annullare.", user)
 			return nil
 		}
@@ -74,6 +76,7 @@ func handleCommands(cmd string, user int) error {
 			return err
 		}
 
+		rm.AddCallbackButton("Altro", "/feed/more/")
 		rm.Send(text, user)
 	case "/help", "/start":
 		if err = templates.ExecuteTemplate(&b, "start.tpl", nil); err != nil {

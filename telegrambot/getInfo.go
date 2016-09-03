@@ -121,7 +121,7 @@ func getInfo(name string) (string, error) {
 		return "", err
 	}
 
-	if text == "" {
+	if len(text) == 0 {
 		return getInfoLegacy(name)
 	}
 

@@ -32,7 +32,7 @@ type ResponseMessage struct {
 func (rm *ResponseMessage) AddCallbackButton(text, data string) {
 	var (
 		buttons [][]InlineKeyboardT
-		row1    []InlineKeyboardT = []InlineKeyboardT{InlineKeyboardT{text, data}}
+		row1    []InlineKeyboardT = []InlineKeyboardT{{text, data}}
 	)
 	buttons = append(buttons, row1)
 

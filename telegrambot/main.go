@@ -51,9 +51,8 @@ func main() {
 		return
 	}
 
-	if flagConfigFile == "" {
-		fmt.Println("No config file provided, exiting.")
-		return
+	if len(flagConfigFile) == 0 {
+		log.Fatal("No config file provided, exiting.")
 	}
 
 	loadConfig(flagConfigFile)

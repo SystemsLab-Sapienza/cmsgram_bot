@@ -51,7 +51,7 @@ func dispatchRequest(u Update) error {
 		cmd = strings.ToLower(u.Message.Text)
 	}
 
-	if cmd != "" {
+	if len(cmd) != 0 {
 		if err := handleCommands(cmd, user); err != nil {
 			log.Println(err)
 		}

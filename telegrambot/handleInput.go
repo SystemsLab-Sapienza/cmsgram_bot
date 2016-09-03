@@ -7,7 +7,7 @@ func handleInput(msg string, user int) error {
 	if err != nil {
 		return err
 	}
-	if lcmd == "" {
+	if len(lcmd) == 0 {
 		rm.Send("Comando non riconosciuto.", user)
 		return nil
 	}
@@ -18,7 +18,7 @@ func handleInput(msg string, user int) error {
 		if err != nil {
 			return err
 		}
-		if res == "" {
+		if len(res) == 0 {
 			rm.Send("Nessun docente trovato.", user)
 			return nil
 		}

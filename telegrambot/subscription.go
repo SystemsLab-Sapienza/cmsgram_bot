@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"sort"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
@@ -81,49 +79,4 @@ func removeSubscriptions(uid int) error {
 	}
 
 	return nil
-}
-
-func getSubscriptions(uid int) (string, error) {
-	type feed struct {
-		ID   string
-		Name string
-	}
-
-	var (
-		b    bytes.Buffer
-		data = struct {
-			Feeds []feed
-		}{}
-	)
-
-	conn := pool.Get()
-	defer conn.Close()
-
-	// Get the user's feed
-	feeds, err := redis.Strings(conn.Do("SMEMBERS", "tgbot:user:feeds:"+strconv.Itoa(uid)))
-	if err != nil {
-		return "", err
-	}
-
-	if len(feeds) == 0 {
-		text := "Non sei iscritto ad alcun feed."
-		return text, err
-	}
-
-	sort.Strings(feeds)
-	for _, f := range feeds {
-		feedName, err := getFeedName(f)
-		if err != nil {
-			return "", err
-		}
-
-		data.Feeds = append(data.Feeds, feed{f, feedName})
-	}
-
-	if err = templates.ExecuteTemplate(&b, "feeds.tpl", data); err != nil {
-		return "", err
-	}
-	text := b.String()
-
-	return text, err
 }

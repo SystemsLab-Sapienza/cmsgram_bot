@@ -70,13 +70,20 @@ func handleCommands(cmd string, user int) error {
 			return err
 		}
 	case "/feed":
-		text, err := getSubscriptions(user)
-		if err != nil {
-			log.Println("getSubscriptions():", err)
+		if err := setLastIndex(user, 0); err != nil {
 			return err
 		}
 
-		rm.AddCallbackButton("Altro", "/feed/more/")
+		text, i, err := listSubscriptions(user)
+		if err != nil {
+			log.Println("listSubscriptions():", err)
+			return err
+		}
+
+		if i != 0 {
+			rm.AddCallbackButton("Altro", "/feed/more/")
+		}
+
 		rm.Send(text, user)
 	case "/help", "/start":
 		if err = templates.ExecuteTemplate(&b, "start.tpl", nil); err != nil {

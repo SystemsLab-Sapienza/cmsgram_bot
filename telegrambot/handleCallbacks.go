@@ -16,6 +16,19 @@ func handleCallbacks(cbq *CallbackQueryT) error {
 	newmsg.Message_id = msg.Message_id
 
 	switch {
+	case strings.HasPrefix(cbq.Data, "/feed/more/"):
+		text, i, err := listSubscriptions(cbq.From.ID)
+		if err != nil {
+			return err
+		}
+
+		if i == 0 {
+			newmsg.AddCallbackButton("Inizio", "/feed/more/")
+		} else {
+			newmsg.AddCallbackButton("Altro", "/feed/more/")
+		}
+
+		newmsg.Send(text, msg.From.ID)
 	case strings.HasPrefix(cbq.Data, "/twiki/more/"):
 		const incr = 5
 		var newindex int

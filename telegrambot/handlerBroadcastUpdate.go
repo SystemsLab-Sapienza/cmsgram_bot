@@ -48,13 +48,13 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 			}{}
 		)
 
-		data.Title, err = redis.String(conn.Do("HGET", "crawler:news:"+payload.Value, "title"))
+		values, err := redis.Values(conn.Do("HMGET", "crawler:news:"+payload.Value, "title", "url"))
 		if err != err {
 			return err
 		}
 
-		data.URL, err = redis.String(conn.Do("HGET", "crawler:news:"+payload.Value, "url"))
-		if err != err {
+		_, err = redis.Scan(values, &data.Title, &data.URL)
+		if err != nil {
 			return err
 		}
 
@@ -98,12 +98,12 @@ func broadcastUpdate(w http.ResponseWriter, r *http.Request) error {
 			}{}
 		)
 
-		data.Name, err = redis.String(conn.Do("HGET", "rss:feed:"+payload.Value, "name"))
+		values, err := redis.Values(conn.Do("HMGET", "rss:feed:"+payload.Value, "name", "url"))
 		if err != nil {
 			return err
 		}
 
-		data.URL, err = redis.String(conn.Do("HGET", "rss:feed:"+payload.Value, "url"))
+		_, err = redis.Scan(values, &data.Name, &data.URL)
 		if err != nil {
 			return err
 		}

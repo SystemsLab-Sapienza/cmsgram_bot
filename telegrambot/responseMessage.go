@@ -20,7 +20,6 @@ type ReplyMarkupT struct {
 	Inline_keyboard [][]InlineKeyboardT `json:"inline_keyboard"`
 }
 
-// This file defines the type ResponseMessage and associated methods.
 type ResponseMessage struct {
 	Chat_id                  int64         `json:"chat_id"`
 	Text                     string        `json:"text"`

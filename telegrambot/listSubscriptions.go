@@ -26,6 +26,7 @@ func listSubscriptions(uid int) (string, int, error) {
 		Name string
 	}
 
+	const incr = 5
 	var (
 		b    bytes.Buffer
 		data = struct {
@@ -71,7 +72,7 @@ func listSubscriptions(uid int) (string, int, error) {
 	}
 
 	sort.Strings(feeds)
-	for i = last; i < len(feeds) && i < last+5; i++ {
+	for i = last; i < len(feeds) && i < last+incr; i++ {
 		feedName, err := getFeedName(feeds[i])
 		if err != nil {
 			return "", 0, err

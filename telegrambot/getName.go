@@ -7,17 +7,18 @@ import (
 )
 
 func getFullName(uid string) (string, error) {
+	var name, lname string
+
 	conn := pool.Get()
 	defer conn.Close()
 
-	// Get first name
-	name, err := redis.String(conn.Do("HGET", "webapp:users:data:"+uid, "nome"))
+	// Get first and last name
+	values, err := redis.Values(conn.Do("HMGET", "webapp:users:data:"+uid, "nome", "cognome"))
 	if err != nil {
 		return "", err
 	}
 
-	// Get last name
-	lname, err := redis.String(conn.Do("HGET", "webapp:users:data:"+uid, "cognome"))
+	_, err = redis.Scan(values, &name, &lname)
 	if err != nil {
 		return "", err
 	}

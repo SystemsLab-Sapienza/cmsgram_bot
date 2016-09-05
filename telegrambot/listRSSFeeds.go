@@ -7,7 +7,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-func listFeeds(i, max int) (string, error) {
+func listRSSFeeds(i, max int) (string, error) {
 	var (
 		b    bytes.Buffer
 		feed = struct {

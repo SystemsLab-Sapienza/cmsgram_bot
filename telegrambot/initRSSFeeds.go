@@ -13,14 +13,14 @@ var (
 	rssfeeds map[string]string
 )
 
-// initRSS initializes the global map rssfeeds
-func initRSS() error {
+// initRSSFeeds initializes the global map rssfeeds
+func initRSSFeeds() error {
 	conn := pool.Get()
 	defer conn.Close()
 
 	n, err := redis.Int(conn.Do("GET", "rss:feed:counter"))
 	if err != nil {
-		log.Println("initRSS():", err)
+		log.Println("initRSSFeeds():", err)
 		return err
 	}
 
@@ -35,7 +35,7 @@ func initRSS() error {
 		id := strconv.Itoa(i)
 		name, err := redis.String(conn.Do("HGET", "rss:feed:"+id, "name"))
 		if err != nil {
-			log.Println("initRSS():", err)
+			log.Println("initRSSFeeds():", err)
 			return err
 		}
 

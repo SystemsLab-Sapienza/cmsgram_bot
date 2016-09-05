@@ -48,9 +48,9 @@ func handleCallbacks(cbq *CallbackQueryT) error {
 			newmsg.AddCallbackButton("Altro", "/twiki/more/"+strconv.Itoa(newindex))
 		}
 
-		text, err := listFeeds(n, newindex)
+		text, err := listRSSFeeds(n, newindex)
 		if err != nil {
-			log.Println("listFeeds():", err)
+			log.Println("listRSSFeeds():", err)
 			return err
 		}
 

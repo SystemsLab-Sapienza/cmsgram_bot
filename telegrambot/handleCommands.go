@@ -94,9 +94,9 @@ func handleCommands(cmd string, user int) error {
 		const incr = 5
 
 		newindex := incr + 1
-		text, err := listFeeds(1, newindex)
+		text, err := listRSSFeeds(1, newindex)
 		if err != nil {
-			log.Println("listFeeds():", err)
+			log.Println("listRSSFeeds():", err)
 			return err
 		}
 

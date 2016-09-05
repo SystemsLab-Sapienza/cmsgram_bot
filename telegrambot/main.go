@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	if flagNewToken {
-		fmt.Println("Token->%s", auth.NewBase36(32))
+		fmt.Println("Token->", auth.NewBase36(32))
 		return
 	}
 
@@ -79,7 +79,7 @@ func main() {
 	http.HandleFunc(config.CrawlerEndpoint, broadcastUpdateHandler)
 	http.HandleFunc(config.WebappEndpoint, sendMessageHandler)
 
-	err := initRSS()
+	err := initRSSFeeds()
 	if err != nil {
 		return
 	}

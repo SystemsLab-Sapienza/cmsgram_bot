@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func handleCallbacks(cbq *CallbackQueryT) error {
+func handleCallbacks(cbq *CallbackQuery) error {
 	var (
 		msg    = cbq.Message
 		newmsg EditedMessage

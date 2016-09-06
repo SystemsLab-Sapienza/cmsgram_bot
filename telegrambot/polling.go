@@ -12,7 +12,7 @@ import (
 func polling() {
 	const delay time.Duration = 250
 	var (
-		response ResponseT
+		response Response
 		offset   int
 		req      string
 

@@ -11,31 +11,31 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type InlineKeyboardT struct {
+type InlineKeyboard struct {
 	Text          string `json:"text"`
 	Callback_data string `json:"callback_data"`
 }
 
-type ReplyMarkupT struct {
-	Inline_keyboard [][]InlineKeyboardT `json:"inline_keyboard"`
+type ReplyMarkup struct {
+	Inline_keyboard [][]InlineKeyboard `json:"inline_keyboard"`
 }
 
 type ResponseMessage struct {
-	Chat_id                  int64         `json:"chat_id"`
-	Text                     string        `json:"text"`
-	Disable_web_page_preview bool          `json:"disable_web_page_preview"`
-	Parse_mode               string        `json:"parse_mode"`
-	Reply_markup             *ReplyMarkupT `json:"reply_markup,omitempty"`
+	Chat_id                  int64        `json:"chat_id"`
+	Text                     string       `json:"text"`
+	Disable_web_page_preview bool         `json:"disable_web_page_preview"`
+	Parse_mode               string       `json:"parse_mode"`
+	Reply_markup             *ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
 func (rm *ResponseMessage) AddCallbackButton(text, data string) {
 	var (
-		buttons [][]InlineKeyboardT
-		row1    []InlineKeyboardT = []InlineKeyboardT{{text, data}}
+		buttons [][]InlineKeyboard
+		row1    []InlineKeyboard = []InlineKeyboard{{text, data}}
 	)
 	buttons = append(buttons, row1)
 
-	rm.Reply_markup = &ReplyMarkupT{buttons}
+	rm.Reply_markup = &ReplyMarkup{buttons}
 }
 
 // Sends message 'text' to the the specified chat (an ID)
@@ -43,7 +43,7 @@ func (rm *ResponseMessage) Send(text string, to int) (err error) {
 	var (
 		response = struct {
 			Ok     bool
-			Result MessageT
+			Result Message
 		}{}
 		url = config.BotAPIBaseURL + config.BotAPIToken + "/sendMessage"
 	)

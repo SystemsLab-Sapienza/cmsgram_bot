@@ -9,22 +9,22 @@ import (
 )
 
 type EditedMessage struct {
-	Chat_id                  int64         `json:"chat_id"`
-	Message_id               int           `json:"message_id"`
-	Text                     string        `json:"text"`
-	Parse_mode               string        `json:"parse_mode"`
-	Disable_web_page_preview bool          `json:"disable_web_page_preview"`
-	Reply_markup             *ReplyMarkupT `json:"reply_markup,omitempty"`
+	Chat_id                  int64        `json:"chat_id"`
+	Message_id               int          `json:"message_id"`
+	Text                     string       `json:"text"`
+	Parse_mode               string       `json:"parse_mode"`
+	Disable_web_page_preview bool         `json:"disable_web_page_preview"`
+	Reply_markup             *ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
 func (em *EditedMessage) AddCallbackButton(text, data string) {
 	var (
-		buttons [][]InlineKeyboardT
-		row1    []InlineKeyboardT = []InlineKeyboardT{{text, data}}
+		buttons [][]InlineKeyboard
+		row1    []InlineKeyboard = []InlineKeyboard{{text, data}}
 	)
 	buttons = append(buttons, row1)
 
-	em.Reply_markup = &ReplyMarkupT{buttons}
+	em.Reply_markup = &ReplyMarkup{buttons}
 }
 
 // Sends message 'text' to the the specified chat (an ID)
@@ -32,13 +32,10 @@ func (em *EditedMessage) Send(text string, to int) (err error) {
 	var (
 		response = struct {
 			Ok     bool
-			Result MessageT
+			Result Message
 		}{}
 		url = config.BotAPIBaseURL + config.BotAPIToken + "/editMessageText"
 	)
-
-	conn := pool.Get()
-	defer conn.Close()
 
 	// Initialize message
 	em.Text = text

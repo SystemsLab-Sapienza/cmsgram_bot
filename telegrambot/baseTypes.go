@@ -1,43 +1,43 @@
 package main
 
-type FromT struct {
+type From struct {
 	ID         int
 	First_name string
 }
 
-type ChatT struct {
+type Chat struct {
 	ID         int64
 	First_name string
 	Type       string
 }
 
-type CallbackQueryT struct {
+type CallbackQuery struct {
 	ID      string
-	From    *FromT
-	Message *MessageT
+	From    *From
+	Message *Message
 	Data    string
 }
 
-type MessageT struct {
+type Message struct {
 	Message_id int
-	From       *FromT
+	From       *From
 	Date       int
-	Chat       *ChatT
+	Chat       *Chat
 	Text       string
 }
 
 type Update struct {
 	Update_id      int
-	Message        *MessageT
-	Callback_query *CallbackQueryT
+	Message        *Message
+	Callback_query *CallbackQuery
 }
 
-type ResponseT struct {
+type Response struct {
 	Ok     bool
 	Result []Update
 }
 
-type InlineKeyboardButtonT struct {
+type InlineKeyboardButton struct {
 	Text          string
 	Callback_data string
 }

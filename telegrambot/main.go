@@ -77,7 +77,8 @@ func main() {
 
 	// Set up endpoints
 	http.HandleFunc(config.CrawlerEndpoint, broadcastUpdateHandler)
-	http.HandleFunc(config.WebappEndpoint, sendMessageHandler)
+	http.HandleFunc(config.WebappEndpoint+"/account/delete", accountDeleteHandler)
+	http.HandleFunc(config.WebappEndpoint+"/message/send", sendMessageHandler)
 
 	err := initRSSFeeds()
 	if err != nil {

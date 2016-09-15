@@ -30,14 +30,12 @@ func polling() {
 		res, err := http.Get(req)
 		if err != nil {
 			log.Println("polling(): http.Get():", err)
-			return
 		}
 
 		// Read the response body
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println("polling(): ioutil.ReadAll():", err)
-			return
 		}
 		res.Body.Close()
 
@@ -45,7 +43,6 @@ func polling() {
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			log.Println("polling(): json.Unmarshal():", err)
-			return
 		}
 
 		if !response.Ok {

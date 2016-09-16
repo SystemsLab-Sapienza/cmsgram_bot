@@ -30,6 +30,7 @@ func polling() {
 		res, err := http.Get(req)
 		if err != nil {
 			log.Println("polling(): http.Get():", err)
+			time.Sleep(time.Second)
 			continue
 		}
 

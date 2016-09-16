@@ -30,12 +30,14 @@ func polling() {
 		res, err := http.Get(req)
 		if err != nil {
 			log.Println("polling(): http.Get():", err)
+			continue
 		}
 
 		// Read the response body
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			log.Println("polling(): ioutil.ReadAll():", err)
+			continue
 		}
 		res.Body.Close()
 
@@ -43,10 +45,12 @@ func polling() {
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			log.Println("polling(): json.Unmarshal():", err)
+			continue
 		}
 
 		if !response.Ok {
 			log.Println("polling():", "Request not valid.")
+			continue
 		}
 
 		// Process each update in its own goroutine

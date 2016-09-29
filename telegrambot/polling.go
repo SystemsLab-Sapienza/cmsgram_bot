@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,6 +20,10 @@ func polling() {
 		URL = config.BotAPIBaseURL + config.BotAPIToken
 	)
 
+	client := &http.Client{
+		Timeout: 0,
+	}
+
 	for {
 		if offset == 0 {
 			req = URL + "/getUpdates"
@@ -26,31 +31,36 @@ func polling() {
 			req = URL + "/getUpdates?offset=" + strconv.Itoa(offset+1)
 		}
 
-		// Get updates from the BotAPI
-		res, err := http.Get(req)
+		err := func() error {
+			// Get updates from the BotAPI
+			res, err := client.Get(req)
+			if err != nil {
+				return err
+			}
+			defer res.Body.Close()
+
+			// Read the response body
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				return err
+			}
+
+			// Decode the JSON payload
+			err = json.Unmarshal(body, &response)
+			if err != nil {
+				return errors.New(string(body))
+			}
+
+			if !response.Ok {
+				return errors.New("Request not valid.")
+			}
+
+			return nil
+		}()
+
 		if err != nil {
-			log.Println("polling(): http.Get():", err)
+			log.Println("polling():", err)
 			time.Sleep(time.Second)
-			continue
-		}
-
-		// Read the response body
-		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Println("polling(): ioutil.ReadAll():", err)
-			continue
-		}
-		res.Body.Close()
-
-		// Decode the JSON payload
-		err = json.Unmarshal(body, &response)
-		if err != nil {
-			log.Println("polling(): json.Unmarshal():", err)
-			continue
-		}
-
-		if !response.Ok {
-			log.Println("polling():", "Request not valid.")
 			continue
 		}
 

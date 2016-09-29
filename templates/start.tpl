@@ -1,4 +1,4 @@
-Benvenuto. Ecco la lista dei comandi supportati:
+Benvenuto. Ecco la lista dei comandi supportati da DIbot:
 
 /annulla - annulla operazione corrente
 /avvisi - iscriviti agli avvisi del dip.

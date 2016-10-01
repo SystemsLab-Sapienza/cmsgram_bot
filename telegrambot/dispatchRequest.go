@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
@@ -26,13 +25,14 @@ func getLastCommand(uid int) (cmd string, err error) {
 	return
 }
 
-func dispatchRequest(u Update) error {
+func dispatchRequest(u Update) (err error) {
 	var (
 		cmd string
 	)
 
 	if u.Callback_query != nil {
-		return handleCallbacks(u.Callback_query)
+		err = handleCallbacks(u.Callback_query)
+		return
 	}
 
 	chat := u.Message.Chat.ID
@@ -41,10 +41,9 @@ func dispatchRequest(u Update) error {
 	conn := pool.Get()
 	defer conn.Close()
 
-	_, err := conn.Do("SET", "tgbot:user:chat:"+strconv.Itoa(user), chat)
+	_, err = conn.Do("SET", "tgbot:user:chat:"+strconv.Itoa(user), chat)
 	if err != nil {
-		log.Println(err)
-		return err
+		return
 	}
 
 	if u.Message.Text[:1] == "/" {
@@ -52,14 +51,10 @@ func dispatchRequest(u Update) error {
 	}
 
 	if len(cmd) != 0 {
-		if err := handleCommands(cmd, user); err != nil {
-			log.Println(err)
-		}
+		err = handleCommands(cmd, user)
 	} else {
-		if err := handleInput(u.Message.Text, user); err != nil {
-			log.Println(err)
-		}
+		err = handleInput(u.Message.Text, user)
 	}
 
-	return nil
+	return
 }

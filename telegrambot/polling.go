@@ -70,7 +70,12 @@ func polling() {
 				if r.Update_id > offset {
 					offset = r.Update_id
 				}
-				go dispatchRequest(r)
+
+				go func() {
+					if err := dispatchRequest(r); err != nil {
+						log.Println(err)
+					}
+				}()
 			}
 		}
 
